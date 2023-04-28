@@ -1,6 +1,7 @@
 #include "client.h"
 
 using namespace System;
+using namespace System::Text;
 using namespace System::IO;
 using namespace System::Net;
 using namespace System::Net::Sockets;
@@ -50,6 +51,13 @@ System::Void client::SendData() {
 		Console::Write("Sending number... ");
 		writer->Write(rand->Next());
 		Console::WriteLine("Done.");
+
+		//Console::Write("Attempting to send a full message... ");
+		//String^ testString = "some testing string";
+		//array<Byte>^ stringBytes = Encoding::ASCII->GetBytes(testString);  // Cannot use Byte^
+		//// Send the message
+		//writer->Write(stringBytes);
+		//Console::WriteLine("Done.");
 
 		// Reads response from server.
 		Console::Write("Reading result... ");
