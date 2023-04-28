@@ -4,6 +4,7 @@ using namespace System;
 using namespace System::IO;
 using namespace System::Net;
 using namespace System::Net::Sockets;
+using namespace System::Threading;
 using namespace testclient;
 
 System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e) {
@@ -12,8 +13,12 @@ System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e)
 	ip = Dns::GetHostEntry("localhost")->AddressList[0];
 	endpoint = gcnew IPEndPoint(ip, 2345);
 
+	Console::Write("Attempting to connect to {0}... ", ip);
+
 	clientSocket = gcnew Socket(ip->AddressFamily, SocketType::Stream, ProtocolType::Tcp);
 	clientSocket->Connect(endpoint);  // sends connection to the server at the specified IP.
+
+	Console::WriteLine("Connected.");
 
 	// Should this be successful, we create a NetworkStream for the data.
 	netStream = gcnew NetworkStream(clientSocket);
@@ -21,7 +26,14 @@ System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e)
 	reader = gcnew BinaryReader(netStream);
 }
 
-System::Void client::SendData(System::Object^ sender, System::EventArgs^ e) {
+System::Void client::SendThread(Object^ sender, EventArgs^ e) {
+	Thread^ sendThread = gcnew Thread(gcnew ThreadStart(this, &client::SendData));
+	Console::Write("Created thread. Starting... ");
+	sendThread->Start();
+	Console::WriteLine("Started.");
+}
+
+System::Void client::SendData() {
 	// Send some sort of data to the server.
 	Random^ rand = gcnew Random();
 

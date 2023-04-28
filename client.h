@@ -24,11 +24,11 @@ namespace testclient {
 
 		NetworkStream^ netStream;
 		BinaryReader^ reader;
-	private: System::Windows::Forms::Button^ button2;
-		   BinaryWriter^ writer;
+		BinaryWriter^ writer;
 
 		System::Void ServerConnect(System::Object^, System::EventArgs^);
-		System::Void SendData(System::Object^, System::EventArgs^);
+		void SendThread(Object^, EventArgs^);
+		System::Void SendData();
 
 	public:
 		client(void)
@@ -45,12 +45,17 @@ namespace testclient {
 		/// </summary>
 		~client()
 		{
+			clientSocket->Shutdown(SocketShutdown::Both);
+			clientSocket->Close();
+			netStream->Close();
 			if (components)
 			{
 				delete components;
 			}
+			
 		}
 	private: System::Windows::Forms::Button^ button1;
+	private: System::Windows::Forms::Button^ button2;
 
 	private:
 		/// <summary>
@@ -77,7 +82,7 @@ namespace testclient {
 			this->button1->TabIndex = 0;
 			this->button1->Text = L"Send Data";
 			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &client::SendData);
+			this->button1->Click += gcnew System::EventHandler(this, &client::SendThread);
 			// 
 			// button2
 			// 
