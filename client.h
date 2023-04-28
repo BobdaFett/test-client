@@ -27,7 +27,8 @@ namespace testclient {
 		BinaryWriter^ writer;
 
 		System::Void ServerConnect(System::Object^, System::EventArgs^);
-		void SendThread(Object^, EventArgs^);
+		System::Void ServerDisconnect(Object^, EventArgs^);
+		System::Void SendThread(Object^, EventArgs^);
 		System::Void SendData();
 
 	public:
@@ -45,9 +46,7 @@ namespace testclient {
 		/// </summary>
 		~client()
 		{
-			clientSocket->Shutdown(SocketShutdown::Both);
-			clientSocket->Close();
-			netStream->Close();
+			ServerDisconnect(nullptr, nullptr);
 			if (components)
 			{
 				delete components;

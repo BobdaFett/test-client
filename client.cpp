@@ -16,7 +16,7 @@ System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e)
 	Console::Write("Attempting to connect to {0}... ", ip);
 
 	clientSocket = gcnew Socket(ip->AddressFamily, SocketType::Stream, ProtocolType::Tcp);
-	clientSocket->Connect(endpoint);  // sends connection to the server at the specified IP.
+	clientSocket->Connect(endpoint);  // attempts connection to the server at the specified IP.
 
 	Console::WriteLine("Connected.");
 
@@ -26,11 +26,18 @@ System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e)
 	reader = gcnew BinaryReader(netStream);
 }
 
+System::Void client::ServerDisconnect(Object^ sender, EventArgs^ e) {
+	clientSocket->Shutdown(SocketShutdown::Both);
+	clientSocket->Close();
+	netStream->Close();
+}
+
 System::Void client::SendThread(Object^ sender, EventArgs^ e) {
+	Console::Write("Creating thread... ");
 	Thread^ sendThread = gcnew Thread(gcnew ThreadStart(this, &client::SendData));
-	Console::Write("Created thread. Starting... ");
+	Console::Write("Done.\nStarting thread... ");
 	sendThread->Start();
-	Console::WriteLine("Started.");
+	Console::WriteLine("Done.");
 }
 
 System::Void client::SendData() {
