@@ -8,6 +8,7 @@ using namespace testclient;
 int main(array<String^>^ args) {
 
 	// Create and run form.
+	Application::EnableVisualStyles();
 	Application::Run(gcnew client());
 
 	return 0;

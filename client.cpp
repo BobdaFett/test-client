@@ -25,6 +25,8 @@ System::Void client::ServerConnect(System::Object^ sender, System::EventArgs^ e)
 	netStream = gcnew NetworkStream(clientSocket);
 	writer = gcnew BinaryWriter(netStream);
 	reader = gcnew BinaryReader(netStream);
+
+	connected = true;
 }
 
 System::Void client::ServerDisconnect(Object^ sender, EventArgs^ e) {
@@ -43,25 +45,64 @@ System::Void client::SendThread(Object^ sender, EventArgs^ e) {
 
 System::Void client::SendData() {
 	// Send some sort of data to the server.
-	Random^ rand = gcnew Random();
+	String^ message = "hello there!";
+	if (connected) {
+		Console::WriteLine("Sending message... ");
+		writer->Write(message);
+		Console::WriteLine("Message sent.");
 
-	// Should send 5 packets with random numbers.
-	for (int i = 0; i < 5; i++) {
-		// Sends data.
-		Console::Write("Sending number... ");
-		writer->Write(rand->Next());
+		String^ response = reader->ReadString();
+		Console::WriteLine("Recieved {0}", response);
+	}
+	else {
+		Console::WriteLine("Client is not connected. Please connect to a server first.");
+	}
+}
+
+System::Void client::RequestSubtract(Object^ sender, EventArgs^ e) {
+	if (connected) {
+		// Create the message.
+		String^ message = "SUBTRACT ";
+		int num1 = Int32::Parse(textBox1->Text);
+		int num2 = Int32::Parse(textBox2->Text);
+		message += num1 + " " + num2;
+
+		// Send the message.
+		Console::Write("Sending message... ");
+		writer->Write(message);
 		Console::WriteLine("Done.");
 
-		//Console::Write("Attempting to send a full message... ");
-		//String^ testString = "some testing string";
-		//array<Byte>^ stringBytes = Encoding::ASCII->GetBytes(testString);  // Cannot use Byte^
-		//// Send the message
-		//writer->Write(stringBytes);
-		//Console::WriteLine("Done.");
+		// Read the server's response.
+		// TODO Send to another function or save in a variable somewhere. This will be the data that's worked on afterwards.
+		Console::Write("Reading message... ");
+		int response = reader->ReadInt32();
+		Console::WriteLine("{0} - {1} = {2}", num1, num2, response);
+	}
+	else {
+		Console::WriteLine("Client is not connected. Please connect to a server first.");
+	}
+}
 
-		// Reads response from server.
-		Console::Write("Reading result... ");
-		int result = reader->ReadInt32();
-		Console::WriteLine("Read {0}.", result);
+System::Void client::RequestAdd(Object^ sender, EventArgs^ e) {
+	if (connected) {
+		// Create the message.
+		String^ message = "ADD ";
+		int num1 = Int32::Parse(textBox1->Text);
+		int num2 = Int32::Parse(textBox2->Text);
+		message += num1 + " " + num2;
+
+		// Send the message.
+		Console::Write("Sending message... ");
+		writer->Write(message);
+		Console::WriteLine("Done.");
+
+		// Read the server's response.
+		// TODO Send to another function or save in a variable somewhere. This will be the data that's worked on afterwards.
+		Console::Write("Reading message... ");
+		int response = reader->ReadInt32();
+		Console::WriteLine("{0} + {1} = {2}", num1, num2, response);
+	}
+	else {
+		Console::WriteLine("Client is not connected. Please connect to a server first.");
 	}
 }
